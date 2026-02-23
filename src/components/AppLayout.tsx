@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -29,9 +29,15 @@ const navItems: NavItem[] = [
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const { role } = useAuth();
+  const navigate = useNavigate();
+  const { role, logout } = useAuth();
 
   const filteredItems = navItems.filter((item) => item.roles.includes(role));
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <>
@@ -84,13 +90,13 @@ export function AppSidebar() {
 
         {/* Footer */}
         <div className="border-t px-3 py-3">
-          <Link
-            to="/"
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-sidebar-accent transition-colors"
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-sidebar-accent transition-colors"
           >
             <LogOut className="h-4.5 w-4.5 shrink-0" />
             {!collapsed && <span>Sign Out</span>}
-          </Link>
+          </button>
         </div>
       </aside>
     </>
@@ -99,7 +105,7 @@ export function AppSidebar() {
 
 export function TopNavbar() {
   const { theme, toggleTheme } = useTheme();
-  const { role, setRole } = useAuth();
+  const { role, user } = useAuth();
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-4 lg:px-6 shadow-card">
@@ -110,17 +116,6 @@ export function TopNavbar() {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Role Switcher (demo) */}
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as UserRole)}
-          className="rounded-md border bg-background px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
-        >
-          <option value="patient">Patient</option>
-          <option value="doctor">Doctor</option>
-          <option value="admin">Admin</option>
-        </select>
-
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
@@ -141,7 +136,7 @@ export function TopNavbar() {
 
         {/* Profile */}
         <div className="ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
-          U
+          {user?.name?.charAt(0).toUpperCase() || "U"}
         </div>
       </div>
     </header>

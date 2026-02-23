@@ -1,36 +1,92 @@
-import { useState } from "react";
-import { Plus, FileText } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, FileText, Loader2, AlertCircle } from "lucide-react";
 import { StatusBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/StateDisplays";
-
-interface MedicalRecord {
-  id: number;
-  diagnosis: string;
-  medication: string;
-  hospital: string;
-  date: string;
-  status: "pending" | "approved" | "rejected";
-}
-
-const sampleRecords: MedicalRecord[] = [
-  { id: 1, diagnosis: "Seasonal Flu", medication: "Oseltamivir", hospital: "City General Hospital", date: "2025-01-15", status: "approved" },
-  { id: 2, diagnosis: "Dengue Fever", medication: "Acetaminophen", hospital: "Regional Medical Center", date: "2025-02-01", status: "pending" },
-  { id: 3, diagnosis: "Gastroenteritis", medication: "ORS + Zinc", hospital: "Community Health Center", date: "2025-02-10", status: "rejected" },
-];
+import { patientService } from "@/services/patientService";
+import type { MedicalRecord } from "@/types";
 
 export default function MedicalHistory() {
-  const [records] = useState<MedicalRecord[]>(sampleRecords);
+  const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ diagnosis: "", medication: "", hospital: "", date: "" });
 
   const inputClass = "mt-1.5 w-full rounded-lg border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // API placeholder: POST /api/medical-record
-    setShowForm(false);
-    setForm({ diagnosis: "", medication: "", hospital: "", date: "" });
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+
+  const fetchRecords = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await patientService.getMedicalHistory();
+      setRecords(data);
+    } catch (err: any) {
+      console.error("Failed to fetch medical history:", err);
+      setError(err.message || "Failed to load medical history");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      const newRecord = await patientService.addMedicalRecord({
+        diagnosis: form.diagnosis,
+        medication: form.medication,
+        hospital: form.hospital,
+        date: form.date,
+      });
+      setRecords((prev) => [newRecord, ...prev]);
+      setShowForm(false);
+      setForm({ diagnosis: "", medication: "", hospital: "", date: "" });
+    } catch (err: any) {
+      console.error("Failed to add record:", err);
+      alert(err.message || "Failed to add medical record");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2 text-muted-foreground">Loading records...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-destructive bg-destructive/10 p-6">
+        <h2 className="text-lg font-semibold text-destructive flex items-center gap-2">
+          <AlertCircle className="h-5 w-5" /> Error Loading Records
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+        <button
+          onClick={fetchRecords}
+          className="mt-4 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -70,7 +126,12 @@ export default function MedicalHistory() {
             </div>
           </div>
           <div className="mt-4 flex gap-2">
-            <button type="submit" className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
               Save Record
             </button>
             <button type="button" onClick={() => setShowForm(false)} className="rounded-lg border px-4 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors">
@@ -98,12 +159,12 @@ export default function MedicalHistory() {
               </thead>
               <tbody>
                 {records.map((r) => (
-                  <tr key={r.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                  <tr key={r._id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3 font-medium">{r.diagnosis}</td>
                     <td className="px-4 py-3 text-muted-foreground">{r.medication}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{r.hospital}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{r.date}</td>
-                    <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
+                    <td className="px-4 py-3 text-muted-foreground">{r.hospital || "N/A"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{formatDate(r.date)}</td>
+                    <td className="px-4 py-3"><StatusBadge status={r.status || "pending"} /></td>
                   </tr>
                 ))}
               </tbody>

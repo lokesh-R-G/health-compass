@@ -1,20 +1,36 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Activity, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { LoadingState, ErrorState } from "@/components/StateDisplays";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { setIsAuthenticated } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || "/dashboard";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // API placeholder: POST /api/auth/login
-    setIsAuthenticated(true);
-    navigate("/dashboard");
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      await login({ email, password });
+      navigate(from, { replace: true });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(error.response?.data?.message || "Invalid email or password");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -29,6 +45,12 @@ export default function Login() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border bg-card p-6 shadow-card">
+          {error && (
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
           <div>
             <label className="text-sm font-medium">Email</label>
             <input
@@ -38,6 +60,7 @@ export default function Login() {
               className="mt-1.5 w-full rounded-lg border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="you@example.com"
               required
+              disabled={isSubmitting}
             />
           </div>
 
@@ -51,6 +74,7 @@ export default function Login() {
                 className="w-full rounded-lg border bg-background px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="••••••••"
                 required
+                disabled={isSubmitting}
               />
               <button
                 type="button"
@@ -64,9 +88,10 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            disabled={isSubmitting}
+            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isSubmitting ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
