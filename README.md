@@ -1,73 +1,347 @@
-# Welcome to your Lovable project
+🏥 Health Compass (HealthIQ)
 
-## Project info
+Regional Health Intelligence & Emergency Medical System
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Health Compass (HealthIQ) is a full-stack healthcare platform designed to:
 
-## How can I edit this code?
+Store patient-level medical records securely
 
-There are several ways of editing your application.
+Enable doctor validation workflows
 
-**Use Lovable**
+Aggregate anonymized regional health data
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Detect early disease spread patterns
 
-Changes made via Lovable will be committed automatically to this repo.
+Calculate regional risk scores
 
-**Use your preferred IDE**
+Integrate environmental indicators (weather + water quality)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Provide role-based dashboards for patients, doctors, and admins
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+🚀 Vision
 
-Follow these steps:
+Health Compass is not just a healthcare management system.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+It is a privacy-first regional health intelligence platform that combines:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Patient medical records
 
-# Step 3: Install the necessary dependencies.
-npm i
+Doctor validation
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Environmental indicators
+
+Statistical anomaly detection
+
+Risk scoring engine
+
+To provide early disease detection and emergency response insights.
+
+🧱 System Architecture
+Frontend (React + TypeScript)
+        ↓
+Django REST API
+        ↓
+MongoDB Atlas
+        ↓
+Aggregation Engine
+        ↓
+Risk Engine
+        ↓
+Regional Intelligence Dashboard
+🛠 Tech Stack
+Frontend
+
+React
+
+TypeScript
+
+Vite
+
+Tailwind CSS
+
+shadcn-ui
+
+Axios
+
+JWT Authentication
+
+Backend
+
+Django
+
+Django REST Framework
+
+SimpleJWT
+
+MongoDB Atlas
+
+Custom Risk Engine (Python)
+
+👥 User Roles
+👤 Patient
+
+Register & Login
+
+Maintain profile
+
+Add medical records
+
+View record approval status
+
+Book appointments
+
+View regional risk dashboard
+
+Receive notifications
+
+🏥 Doctor
+
+Login
+
+Review pending medical records
+
+Approve / Reject records
+
+Manage appointments
+
+View patient medical history (read-only)
+
+🏛 Admin
+
+View regional risk overview
+
+Monitor anomalies
+
+Monitor environmental data
+
+Track health trends
+
+🔐 Security & Privacy Model
+
+JWT-based authentication
+
+Role-based access control
+
+Password hashing
+
+Protected API endpoints
+
+Doctor-validated medical records
+
+Analytics uses only aggregated data
+
+Risk engine never reads raw patient records
+
+📊 Core Modules
+1️⃣ Authentication & Authorization
+
+JWT login
+
+Refresh tokens
+
+Role-based route protection
+
+2️⃣ Patient Medical Record Management
+
+Doctor validation workflow
+
+Pending → Approved/Rejected status
+
+Only approved records used in analytics
+
+3️⃣ Appointment System
+
+Patient booking
+
+Doctor confirmation
+
+Notification triggers
+
+4️⃣ Aggregation Engine
+
+Groups approved records by:
+
+Region
+
+Disease
+
+Date
+
+Stores anonymized RegionalStats
+
+5️⃣ Environmental Data Integration
+
+Weather data (rainfall, humidity, temperature)
+
+Water quality (pH, TDS, contamination level)
+
+6️⃣ Risk Engine
+
+Risk Score Formula:
+
+RiskScore =
+0.5 × DiseaseGrowthRate
+0.2 × RainfallIndex
+0.2 × HumidityIndex
+0.1 × WaterQualityImpact
+
+Risk Levels:
+
+0–25 → Low
+
+26–50 → Medium
+
+51–75 → High
+
+76–100 → Critical
+
+Includes anomaly detection using statistical thresholds.
+
+7️⃣ Notification System
+
+Triggers:
+
+Record approved/rejected
+
+Appointment confirmed
+
+Risk threshold exceeded
+
+📁 Project Structure
+health-compass/
+│
+├── backend/
+│   ├── accounts/
+│   ├── patients/
+│   ├── doctors/
+│   ├── appointments/
+│   ├── analytics/
+│   ├── notifications/
+│   └── healthiq/
+│
+├── src/
+│   ├── components/
+│   ├── contexts/
+│   ├── pages/
+│   ├── services/
+│   ├── types/
+│   └── lib/
+│
+├── .env
+├── package.json
+└── manage.py
+⚙️ Setup Instructions
+1️⃣ Clone Repository
+git clone https://github.com/your-username/health-compass.git
+cd health-compass
+2️⃣ Backend Setup
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+Create .env file inside backend:
+
+MONGODB_URI=your_mongodb_atlas_connection_string
+SECRET_KEY=your_secret_key
+
+Run migrations:
+
+python manage.py migrate
+
+Seed data:
+
+python manage.py seed_data
+
+Start server:
+
+python manage.py runserver
+
+Backend runs at:
+
+http://localhost:8000
+3️⃣ Frontend Setup
+npm install
 npm run dev
-```
 
-**Edit a file directly in GitHub**
+Frontend runs at:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+http://localhost:8081
+🧪 Test Credentials
+Role	Email	Password
+Admin	admin@healthiq.com
+	Admin@123
+Doctor	dr_arun@healthiq.com
+	Doctor@123
+Doctor	dr_meena@healthiq.com
+	Doctor@123
+Patient	lokesh@healthiq.com
+	Patient@123
+Patient	ravi@healthiq.com
+	Patient@123
+📈 MVP Scope
 
-**Use GitHub Codespaces**
+Included:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Patient-level data storage
 
-## What technologies are used for this project?
+Doctor validation workflow
 
-This project is built with:
+Regional aggregation
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Risk scoring engine
 
-## How can I deploy this project?
+Appointment booking
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Notifications
 
-## Can I connect a custom domain to my Lovable project?
+Role-based dashboards
 
-Yes, you can!
+Excluded (Future Scope):
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Aadhaar integration
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+IoT live sensor integration
+
+Kafka streaming
+
+ML-based LSTM forecasting
+
+Microservices architecture
+
+🔮 Future Enhancements
+
+Real-time streaming analytics
+
+LSTM disease forecasting
+
+IoT water sensors
+
+Government API integration
+
+Insurance analytics integration
+
+Distributed microservices
+
+🎯 Project Objective
+
+To build a:
+
+Privacy-first, doctor-validated, regional health intelligence system capable of early disease detection and emergency forecasting.
+
+📌 Why This Project Matters
+
+Enables early outbreak detection
+
+Supports emergency medical decisions
+
+Integrates environmental health indicators
+
+Provides scalable analytics architecture
+
+Balances privacy with intelligence
+
+🧑‍💻 Author
+
+Lokesh Ramesh
+Full Stack Developer | Data & AI Enthusiast
