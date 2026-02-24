@@ -341,6 +341,3 @@ To build a:
 **Lokesh Ramesh**
 Full Stack Developer | Data & AI Enthusiast
 
-
-
-What style do you want next?
