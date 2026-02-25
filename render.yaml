@@ -1,0 +1,27 @@
+# Render Blueprint for HealthIQ Backend
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: healthiq-backend
+    env: python
+    region: oregon
+    buildCommand: |
+      cd backend && pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: |
+      cd backend && gunicorn --config gunicorn.conf.py healthiq.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: MONGO_URI
+        sync: false
+      - key: MONGODB_NAME
+        value: healthiq
+      - key: FRONTEND_URL
+        sync: false
+      - key: ALLOWED_HOSTS
+        sync: false
