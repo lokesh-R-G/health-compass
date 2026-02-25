@@ -11,7 +11,7 @@ services:
     startCommand: gunicorn healthiq.wsgi:application --config gunicorn.conf.py
     envVars:
       - key: PYTHON_VERSION
-        value: "3.11"
+        value: "3.11.0"
       - key: SECRET_KEY
         value: h2343s78byucri@8sdfh23u4y2u3h4
       - key: DEBUG

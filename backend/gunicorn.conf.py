@@ -3,8 +3,8 @@
 import multiprocessing
 import os
 
-# Bind to the port provided by Render
-bind = f"0.0.0.0:{os.getenv('PORT', '8000')}"
+# Bind to the port provided by Render (Render defaults to 10000)
+bind = f"0.0.0.0:{os.getenv('PORT', '10000')}"
 
 # Worker configuration
 workers = multiprocessing.cpu_count() * 2 + 1

@@ -6,11 +6,16 @@ _db = None
 
 
 def get_db():
-    """Get MongoDB database connection."""
+    """Get MongoDB database connection (lazy — never at import time)."""
     global _client, _db
     
     if _db is None:
-        _client = MongoClient(settings.MONGODB_URI)
+        uri = settings.MONGODB_URI
+        if not uri:
+            raise RuntimeError(
+                "MONGO_URI is not set. Configure it in environment variables."
+            )
+        _client = MongoClient(uri)
         _db = _client[settings.MONGODB_NAME]
     
     return _db
