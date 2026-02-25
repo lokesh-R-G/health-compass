@@ -4,24 +4,25 @@
 services:
   - type: web
     name: healthiq-backend
-    env: python
+    runtime: python
     region: oregon
-    buildCommand: |
-      cd backend && pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: |
-      cd backend && gunicorn --config gunicorn.conf.py healthiq.wsgi:application
+    rootDir: backend
+    buildCommand: ./build.sh
+    startCommand: gunicorn healthiq.wsgi:application --config gunicorn.conf.py
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
       - key: SECRET_KEY
-        generateValue: true
+        value: h2343s78byucri@8sdfh23u4y2u3h4
       - key: DEBUG
         value: "False"
       - key: MONGO_URI
-        sync: false
+        value: mongodb+srv://lokeshca2004_db_user:2NCTdCoJtfuUPkA2@cluster0.rbf0jwg.mongodb.net/
       - key: MONGODB_NAME
-        value: healthiq
+        value: health_monitor
       - key: FRONTEND_URL
-        sync: false
+        value: https://health-compass-rose.vercel.app
       - key: ALLOWED_HOSTS
-        sync: false
+        value: .onrender.com,localhost,127.0.0.1
+      - key: SECURE_SSL_REDIRECT
+        value: "False"
